@@ -3,13 +3,13 @@ spark-shell
 ------------------------------
 
 val flights_df = spark.read.option("header", "true").csv("s3://229412h-demo/DelayedFlights-updated.csv")
+flights_df.createOrReplaceTempView("delayed_flights")
 
 val carrier_delay = spark.sql("SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE CarrierDelay / ArrDelay END) * 100) AS AvgCarrierDelayPercentage FROM delayed_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year")
 spark.time(carrier_delay.show())
 
 val NAS_delay = spark.sql("SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE NASDelay / ArrDelay END) * 100) AS AvgNASDelayPercentage FROM delayed_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year")
 spark.time(NAS_delay.show())
-(1 to 5 by 1).foreach(spark.time(NAS_delay.show()))
 
 val weather_delay = spark.sql("SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE WeatherDelay / ArrDelay END) * 100) AS AvgWeatherDelayPercentage FROM delayed_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year")
 spark.time(weather_delay.show())
