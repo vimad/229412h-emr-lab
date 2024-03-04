@@ -3,7 +3,7 @@ import argparse
 from pyspark.sql import SparkSession
 
 def calculate_year_wise_late_air_craft_delay(data_source, output_uri):
-    with SparkSession.builder.appName("Calculate Year Wise Carrier Delay").getOrCreate() as spark:
+    with SparkSession.builder.appName("Calculate Year Wise Late Air Craft Delay").getOrCreate() as spark:
         if data_source is not None:
             flights_df = spark.read.option("header", "true").csv(data_source)
         flights_df.createOrReplaceTempView("delayed_flights")
