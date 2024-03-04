@@ -1,0 +1,71 @@
+wget https://online.uom.lk/pluginfile.php/731793/mod_assign/intro/DelayedFlights-updated.csv
+
+hdfs dfs -mkdir demo-data
+hdfs dfs -put DelayedFlights-updated.csv demo-data
+
+hdfs dfs -ls demo-data
+
+------------------------------------------
+
+> hive
+
+-------------------------------------------
+
+DROP TABLE delay_flights;
+
+CREATE TABLE IF NOT EXISTS delay_flights (
+Id INT,
+Year INT,
+Month INT,
+DayOfMonth INT,
+DayOfWeek INT,
+DepTime INT,
+CRSDepTime INT,
+ArrTime INT,
+CRSArrTime INT,
+UniqueCarrier STRING,
+FlightNum INT,
+TailNum STRING,
+ActualElapsedTime INT,
+CRSElapsedTime INT,
+AirTime INT,
+ArrDelay INT,
+DepDelay INT,
+Origin STRING,
+Dest STRING,
+Distance INT,
+TaxiIn INT,
+TaxiOut INT,
+Cancelled INT,
+CancellationCode STRING,
+Diverted INT,
+CarrierDelay INT,
+WeatherDelay INT,
+NASDelay INT,
+SecurityDelay INT,
+LateAircraftDelay INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+tblproperties ("skip.header.line.count"="1");
+
+LOAD DATA INPATH 's3://229412h-demo/DelayedFlights-updated.csv' INTO TABLE delay_flights_2;
+
+SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE CarrierDelay / ArrDelay END) * 100) AS AvgCarrierDelayPercentage
+FROM delay_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year;
+
+SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE NASDelay / ArrDelay END) * 100) AS AvgNASDelayPercentage
+FROM delay_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year;
+
+SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE WeatherDelay / ArrDelay END) * 100) AS AvgWeatherDelayPercentage
+FROM delay_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year;
+
+SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE LateAircraftDelay / ArrDelay END) * 100) AS AvgLateAircraftDelayPercentage
+FROM delay_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year;
+
+SELECT Year, AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE SecurityDelay / ArrDelay END) * 100) AS AvgSecurityDelayPercentage
+FROM delay_flights WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year;
+
+
+
