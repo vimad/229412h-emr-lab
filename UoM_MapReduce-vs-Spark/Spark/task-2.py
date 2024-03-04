@@ -9,13 +9,13 @@ def calculate_year_wise_nsa_delay(data_source, output_uri):
         flights_df.createOrReplaceTempView("delayed_flights")
 
 
-        year_wise_nsa_delay = spark.sql("""SELECT Year,
-            AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE NASDelay / ArrDelay END) * 100) AS AvgNSADelayPercentage
+        year_wise_nas_delay = spark.sql("""SELECT Year,
+            AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE NASDelay / ArrDelay END) * 100) AS AvgNASDelayPercentage
             FROM delayed_flights
             WHERE Year >= 2003 AND Year <= 2010 GROUP BY Year""")
 
         # Write the results to the specified output URI
-        year_wise_nsa_delay.write.option("header", "true").mode("overwrite").csv(output_uri)
+        year_wise_nas_delay.write.option("header", "true").mode("overwrite").csv(output_uri)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
