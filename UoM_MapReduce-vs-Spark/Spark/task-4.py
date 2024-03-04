@@ -8,7 +8,7 @@ def calculate_year_wise_late_air_craft_delay(data_source, output_uri):
             flights_df = spark.read.option("header", "true").csv(data_source)
         flights_df.createOrReplaceTempView("delayed_flights")
 
-        # Create a DataFrame of the top 10 restaurants with the most Red violations
+
         year_wise_late_air_craft_delay = spark.sql("""SELECT Year,
             AVG((CASE WHEN ArrDelay = 0 THEN 0 ELSE LateAircraftDelay / ArrDelay END) * 100) AS AvgLateAircraftDelayPercentage
             FROM delayed_flights
